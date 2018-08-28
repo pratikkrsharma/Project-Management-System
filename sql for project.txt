@@ -1,0 +1,40 @@
+//create table commands
+
+create table project
+( pid int primary key,
+  pname varchar(20));
+
+create table teacher
+( teacher_id varchar(5) primary key,
+  tname varchar(20),
+  tphone varchar(10),
+  t_mail varchar(30));
+
+create table team
+( tm_id int primary key,
+  tm_name varchar(20),
+  pid int references project(pid),
+  teacher_id varchar(5) references teacher(teacher_id));
+
+create table student
+( usn varchar(10) primary key,
+  name varchar(20),
+  dob date,
+  sphone varchar(10),
+  address varchar(50),
+  st_mail varchar(30),
+  tm_id int references team(tm_id));
+
+create table marks
+( marks1 int,
+  marks2 int,
+  marks3 int,
+  finalmarks int,
+  pid int references project(pid),
+  teacher_id varchar(5) references teacher(teacher_id),
+  usn varchar(10) references student(usn),
+  primary key(pid,teacher_id,usn));
+
+create table userdetails 
+( user_name varchar(20) primary key,
+  password varchar(20));

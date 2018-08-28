@@ -1,0 +1,44 @@
+//stored procedure
+DELIMITER @@
+DROP PROCEDURE fmarks @@
+CREATE PROCEDURE project_db.fmarks
+()
+BEGIN
+DECLARE total int;        -----changed here
+DECLARE usid varchar(10);       -----changed here
+DECLARE DONE INT DEFAULT FALSE;
+declare c cursor for 
+  SELECT marks1 + marks2 + marks3 as total, usn FROM marks WHERE finalmarks is null for update;
+  DECLARE CONTINUE HANDLER for NOT FOUND SET DONE=TRUE;
+  open c;
+  MYLOOP:
+  LOOP
+  fetch c into total,usid;
+  if DONE then 
+   LEAVE MYLOOP; 
+  end if;
+   update marks set finalmarks=total where usn=usid ;       -----changed here
+end LOOP;
+close c;
+END @@ 
+DELIMITER ; 
+
+
+//trigger
+DELIMITER @@
+DROP TRIGGER markstrig @@
+CREATE TRIGGER project_db.markstrig
+BEFORE INSERT ON project_db.marks
+FOR EACH ROW
+BEGIN
+    IF (NEW.marks1 > 10) THEN 
+        SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = 'Warning: marks1 > 10!';
+   END IF;
+   IF (NEW.marks2 > 30) THEN 
+        SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = 'Warning: marks2 > 30!';
+   END IF;
+   IF (NEW.marks3 > 60) THEN 
+        SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = 'Warning: marks3 > 60!';
+END IF;
+END @@ 
+DELIMITER ; 
